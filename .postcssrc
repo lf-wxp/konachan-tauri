@@ -1,0 +1,17 @@
+{
+  "plugins": {
+    "postcss-normalize": {
+      "browserslist": "last 2 versions"
+    },
+    "postcss-import": {
+      "path": ["src/css"]
+    },
+    "postcss-assets": {
+      "loadPaths": ["src/fonts", "src/images"]
+    },
+    "postcss-color-function": true,
+    "postcss-preset-env": {
+      "stage": 0
+    }
+  }
+}
