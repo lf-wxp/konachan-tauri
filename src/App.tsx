@@ -6,6 +6,7 @@ import Setting from './component/Setting';
 import Service from './component/Service';
 import Loading from './component/Loading';
 import DotLine from './component/DotLine';
+import Download from './component/Download';
 
 import './css/_var.pcss';
 import './css/_base.pcss';
@@ -21,6 +22,7 @@ const App: React.MemoExoticComponent<() => React.ReactElement> = React.memo(
         <aside className="bk-aside">
           <Page />
           <Setting />
+          <Download />
         </aside>
         <section className="bk-section">
           <ImageList />

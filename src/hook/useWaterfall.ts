@@ -101,15 +101,6 @@ const calcListItemSize = (
   ) as unknown) as number;
   const height = multiply(colWidth)(ratio);
   const { x, y } = calcPositionPure(colWidth)(cols);
-  console.log('ratioooooooooo', {
-    styleW: colWidth,
-    styleH: height,
-    style: {
-      width: colWidth,
-      height,
-      transform: `translateX(${x}px) translateY(${y}px)`,
-    },
-  });
   return mergeRight({
     styleW: colWidth,
     styleH: height,
@@ -129,7 +120,6 @@ const updateLayoutPure = (security: boolean) => (colWidth: number) => (
     reduce(
       ({ cols, items }, item) => {
         const newItem = calcListItemSize(item, colWidth, cols);
-        console.log('colssssssssssssss', cols, items, item);
         const newCols = calcColumnArrayPure(prop('styleH', newItem) as number)(
           cols,
         );
@@ -155,7 +145,6 @@ export default ({
     const { column, colWidth } = calcColumnWidth(maxWidth)(minWidth)(width);
     const colArray = new Array(column).fill(0);
     const layout = updateLayoutPure(security)(colWidth)(colArray)(images);
-    console.log('layout', layout);
     setList(layout.items);
   }, [images, maxWidth, minWidth, security, width]);
 

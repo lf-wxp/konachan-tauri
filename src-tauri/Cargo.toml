@@ -24,6 +24,7 @@ serde = {version = "1.0.130", features = ["derive"] }
 tokio = {version = "1.7.0", features = ["full"] }
 tokio-util = {version = "0.6.1", features = ["io"] }
 xmlparser = "0.13.3"
+futures-util = "0.3.19"
 
 [features]
 default = [ "custom-protocol" ]

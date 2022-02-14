@@ -1,6 +1,7 @@
 import { atom } from 'recoil';
 
 import { ImageDetail } from './model/image';
+import { DownloadItem } from './model/downloadItem';
 
 export const pagesState = atom({
   key: 'pagesState',
@@ -48,5 +49,10 @@ export const colorSetState = atom({
     mute: '#39cccc',
     vibrant: '#39ccc',
   },
+});
+
+export const downloadItemsState = atom<DownloadItem[]>({
+  key: 'downloadItemsState',
+  default: [],
 });
 

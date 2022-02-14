@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
+import { useAsync } from 'react-use';
 import { useRecoilState } from 'recoil';
-import { invoke } from '@tauri-apps/api/tauri';
 
 import {
 	imagesState,
@@ -9,28 +9,34 @@ import {
 	tagsState,
 	pageState,
 	refreshToggleState,
+  downloadItemsState,
 } from '../../store';
-
-import { ImageDetail } from '../../model/image';
+import { DownloadItem } from '../../model/downloadItem';
+import { getPost, listenProgress, ProgressAction, updateProgress } from '../../utils/action';
 
 export default React.memo(() => {
 	const [, setImages] = useRecoilState(imagesState);
 	const [, setTotal] = useRecoilState(totalState);
 	const [, setLoading] = useRecoilState(loadingState);
+	const [, setDownloadItems] = useRecoilState(downloadItemsState);
 	const [tags] = useRecoilState(tagsState);
 	const [page] = useRecoilState(pageState);
 	const [refresh] = useRecoilState(refreshToggleState);
 
-	useEffect(() => {
+	useAsync(async () => {
 		setLoading(true);
-		invoke<{ images: ImageDetail[]; count: number }>('get_post', { page, tags, refresh })
-			.then((data) => {
-				setImages(data.images);
-				setTotal(data.count);
-			})
-			.finally(() => {
-				setLoading(false);
-			});
+    const data = await getPost({ page, tags, refresh });
+    setLoading(false);
+    if (!data) return;
+    setImages(data.images);
+    setTotal(data.count);
 	}, [refresh, tags, page]);
+
+  useEffect(() => {
+    listenProgress((data: DownloadItem) => {
+      console.log('download', data);
+      setDownloadItems(prev => updateProgress(prev, ProgressAction.UPDATE, data));
+    });
+  }, []);
 	return null;
 });

@@ -1,4 +1,4 @@
-import React, { CSSProperties, useCallback } from 'react';
+import React, { CSSProperties, useCallback, useEffect } from 'react';
 import { FaDownload } from 'react-icons/fa';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
@@ -9,23 +9,25 @@ import Image from '../Image';
 import useImageLoad from '../../hook/useImageLoad';
 import useWaterfall from '../../hook/useWaterfall';
 import fallbackImage from '../../image/loaderror.png';
-import { securityState, imagesState } from '../../store';
+import { securityState, imagesState, downloadItemsState } from '../../store';
 
 import { TFunc2 } from '../../utils/type';
+import { downloadItem } from '../../utils/action';
 import { ImageDetail } from '../../model/image';
 import { ImageDom } from '../../model/imageDom';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './style.pcss';
+import { DownloadStatus } from '../../model/downloadItem';
 
 const maxWidth = 300;
 const minWidth = 200;
 
-const transformUrl = (url: string) => `/api/image?url=${encodeURI(url)}`;
 
 export default React.memo(() => {
   const items = useRecoilValue<ImageDetail[]>(imagesState);
   const [security] = useRecoilState(securityState);
+  const [, setDownloadItems] = useRecoilState(downloadItemsState);
   const [refDom, { width }] = useMeasure<HTMLDivElement>();
   const images = useImageLoad<ImageDetail>(items, 'preview');
   const list = useWaterfall({
@@ -35,6 +37,13 @@ export default React.memo(() => {
     width,
     images,
   });
+  const downloadImage = useCallback((url: string, preview: string) => {
+    setDownloadItems((prev) => [
+			...prev,
+			{ url, preview, percent: 0, status: DownloadStatus.PENDING },
+		]);
+    downloadItem({ url, preview });
+  }, []);
 
   const combineStyle: TFunc2<
     CSSProperties,
@@ -48,10 +57,6 @@ export default React.memo(() => {
     [],
   );
 
-
-  console.log('items', items);
-  console.log('images', images);
-  console.log('list', list);
   return (
     <PerfectScrollbar>
       <div ref={refDom} className="bk-list__wrap">
@@ -78,7 +83,7 @@ export default React.memo(() => {
                   </p>
                 </div>
                 <a
-                  href={transformUrl(item.url)}
+                  onClick={() => downloadImage(item.url, item.preview)}
                   className="bk-list__down"
                   // rel="noopener noreferrer"
                   data-id={item.id}
