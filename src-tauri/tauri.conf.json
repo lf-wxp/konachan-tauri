@@ -1,10 +1,10 @@
 {
   "package": {
-    "productName": "konachan-tauri",
+    "productName": "konachan",
     "version": "0.1.0"
   },
   "build": {
-    "distDir": "../build",
+    "distDir": "../dist",
     "devPath": "http://localhost:1234",
     "beforeDevCommand": "pnpm run start",
     "beforeBuildCommand": "pnpm run build"
@@ -50,6 +50,10 @@
     },
     "allowlist": {
       "all": true
+    },
+    "systemTray": {
+      "iconPath": "icons/256x256@2x.png",
+      "iconAsTemplate": true
     },
     "windows": [
       {

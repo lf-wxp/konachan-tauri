@@ -1,4 +1,3 @@
-use bytes::Bytes;
 use futures_util::StreamExt;
 use reqwest;
 use roxmltree;
@@ -91,17 +90,10 @@ impl Progress {
 
 pub type PostResult = Result<Post, reqwest::Error>;
 
-pub struct ImageResponse {
-  pub data: Bytes,
-}
 pub const API: &str = "https://konachan.net/post.xml";
 
 pub fn get_file_name(url: &str) -> &str {
   Path::new(url).file_name().unwrap().to_str().unwrap()
-}
-
-pub fn get_image(url: String) -> Result<Bytes, reqwest::Error> {
-  reqwest::blocking::get(url)?.bytes()
 }
 
 pub fn create_file(url: String) -> io::Result<File> {
@@ -137,6 +129,7 @@ pub async fn download_image_progress_strut(
   Ok(())
 }
 
+#[allow(dead_code)]
 pub async fn download_image(url: String) -> Result<(), Box<dyn Error>> {
   let res = reqwest::get(&url).await?;
   let mut file = create_file(url)?;

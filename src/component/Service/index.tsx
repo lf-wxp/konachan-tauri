@@ -34,7 +34,6 @@ export default React.memo(() => {
 
   useEffect(() => {
     listenProgress((data: DownloadItem) => {
-      console.log('download', data);
       setDownloadItems(prev => updateProgress(prev, ProgressAction.UPDATE, data));
     });
   }, []);
