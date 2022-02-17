@@ -1,3 +1,4 @@
+import { toast } from 'react-toastify';
 import { invoke } from '@tauri-apps/api/tauri';
 import { listen } from '@tauri-apps/api/event'
 
@@ -33,28 +34,34 @@ export type ProgressData = {
   id: number;
 };
 
+const toastError = (msg: string) => {
+  toast.error(msg, {
+    position: 'top-center',
+    theme: 'colored',
+    autoClose: 1000,
+    hideProgressBar: true,
+    closeOnClick: false,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+  });
+}
 
 export const getPost = async (params: { page: number; tags: string; refresh: boolean }) => {
   try {
     const data = await invoke<Data>(Action.GET_POST, params);
+    if (data.code !== 0) {
+      toastError('获取图片失败，请重试');
+    }
     return data.data;
-  } catch (error) {
-    console.error(error);
+  } catch {
+    toastError('获取图片失败，请重试');
   }
 };
 
-export const downloadItem = async (params: { url: string; preview: string }) => {
-  try {
-    await invoke<Data>(Action.DOWNLOAD_ITEM, params);
-  } catch (error) {
-    console.error(error);
-  }
-};
+export const downloadItem = (params: { url: string; preview: string }) => invoke<Data>(Action.DOWNLOAD_ITEM, params);
 
-export const updateProgress = (source: DownloadItem[], action: ProgressAction, value: DownloadItem) => {
-  if (action === ProgressAction.REMOVE) {
-    return source.filter(item => item.url !== value.url);
-  }
+export const updateValue = (source: DownloadItem[], value: DownloadItem) => {
   return source.map((item) => {
     if (item.url !== value.url) return item;
     return {
@@ -62,6 +69,13 @@ export const updateProgress = (source: DownloadItem[], action: ProgressAction, v
       ...value
     }
   })
+}
+
+export const updateProgress = (source: DownloadItem[], action: ProgressAction, value: DownloadItem) => {
+  if (action === ProgressAction.REMOVE) {
+    return source.filter(item => item.url !== value.url);
+  }
+  return updateValue(source, value);
 };
 
 export const listenProgress = (callback: TFunc1Void<DownloadItem>) => {

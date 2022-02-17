@@ -9,6 +9,7 @@ use std::io::{self, Cursor, Write};
 use std::path::Path;
 use tauri::api::path::download_dir;
 use tauri::Manager;
+use std::time::Duration;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Image {
@@ -30,6 +31,7 @@ pub struct ApiResponse {
   pub data: Option<Post>,
   pub code: u8,
 }
+
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Post {
   count: i32,
@@ -83,6 +85,15 @@ impl Progress {
       percent,
       url: self.url.clone(),
       status: status.to_string(),
+    };
+    let _ = &self.app.emit_all("progress", payload);
+  }
+
+  pub fn error(&self) -> () {
+    let payload = ProgressPayload {
+      percent: self.get_percent(),
+      url: self.url.clone(),
+      status: "fail".to_string(),
     };
     let _ = &self.app.emit_all("progress", payload);
   }
@@ -150,6 +161,7 @@ pub async fn get_post(page: i8) -> PostResult {
   let client = reqwest::Client::new();
   let resp = client
     .get(API)
+    .timeout(Duration::from_secs(10))
     .query(&[("page", page)])
     .send()
     .await?

@@ -1,25 +1,36 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import {
   IoIosCheckmarkCircle,
   IoMdInformationCircleOutline,
   IoIosRefresh
 } from 'react-icons/io';
 import PerfectScrollbar from 'react-perfect-scrollbar';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import { downloadItemsState  } from '../../store';
 import { DownloadItem, DownloadStatus } from '../../model/downloadItem';
-import { downloadItem } from '../../utils/action';
+import { downloadItem, updateValue } from '../../utils/action';
 import Progress from '../Progress';
 
 import 'react-perfect-scrollbar/dist/css/styles.css';
 import './style.pcss';
 
 export default React.memo(() => {
-  const downloadItems = useRecoilValue<DownloadItem[]>(downloadItemsState)
+	const [downloadItems, setDownloadItems] = useRecoilState(downloadItemsState);
+  const downloadItemsRef = useRef(downloadItems);
 
   const downloadRetry = useCallback((url: string, preview: string): void => {
+    const items = downloadItemsRef.current;
+    const hasItem = !!items.find((item) => item.url === url && item.status !== DownloadStatus.FAIL);
+    if (hasItem) return;
     downloadItem({ url, preview });
+    setDownloadItems(prev => {
+      return updateValue(prev, { url, preview, status: DownloadStatus.PENDING, percent: 0 });
+    });
   }, []);
+
+  useEffect(() => {
+    downloadItemsRef.current = downloadItems;
+  }, [downloadItems]);
 
   return (
     <section className='bk-download'>

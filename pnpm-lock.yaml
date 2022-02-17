@@ -30,6 +30,7 @@ specifiers:
   react-dom: ^18.0.0-rc.0
   react-icons: ^4.3.1
   react-perfect-scrollbar: ^1.5.8
+  react-toastify: ^8.2.0
   react-transition-group: ^4.4.2
   react-use: ^17.3.2
   recoil: ^0.6.1
@@ -47,6 +48,7 @@ dependencies:
   react-dom: 18.0.0-rc.0-next-fe905f152-20220107_e32785dbcafa2fde92a71a8f50f52ce6
   react-icons: 4.3.1_e32785dbcafa2fde92a71a8f50f52ce6
   react-perfect-scrollbar: 1.5.8_88bc4fee344d9ebe6e1abd431fb36b31
+  react-toastify: 8.2.0_88bc4fee344d9ebe6e1abd431fb36b31
   react-transition-group: 4.4.2_88bc4fee344d9ebe6e1abd431fb36b31
   react-use: 17.3.2_88bc4fee344d9ebe6e1abd431fb36b31
   recoil: 0.6.1_88bc4fee344d9ebe6e1abd431fb36b31
@@ -2949,6 +2951,11 @@ packages:
     engines: {node: '>=0.8'}
     dev: true
 
+  /clsx/1.1.1:
+    resolution: {integrity: sha512-6/bPho624p3S2pMyvP5kKBPXnI3ufHLObBFCfgx+LkeR5lg2XYy2hqZqUf45ypD8COn2bhgGJSUE+l5dhNBieA==}
+    engines: {node: '>=6'}
+    dev: false
+
   /color-convert/1.9.3:
     resolution: {integrity: sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==}
     dependencies:
@@ -5611,6 +5618,17 @@ packages:
     resolution: {integrity: sha512-Gvzk7OZpiqKSkxsQvO/mbTN1poglhmAV7gR/DdIrRrSMXraRQQlfikRJOr3Nb9GTMPC5kof948Zy6jJZIFtDvQ==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /react-toastify/8.2.0_88bc4fee344d9ebe6e1abd431fb36b31:
+    resolution: {integrity: sha512-Pg2Ju7NngAamarFvLwqrFomJ57u/Ay6i6zfLurt/qPynWkAkOthu6vxfqYpJCyNhHRhR4hu7+bySSeWWJu6PAg==}
+    peerDependencies:
+      react: '>=16'
+      react-dom: '>=16'
+    dependencies:
+      clsx: 1.1.1
+      react: 18.0.0-rc.0-next-fe905f152-20220107
+      react-dom: 18.0.0-rc.0-next-fe905f152-20220107_e32785dbcafa2fde92a71a8f50f52ce6
+    dev: false
 
   /react-transition-group/4.4.2_88bc4fee344d9ebe6e1abd431fb36b31:
     resolution: {integrity: sha512-/RNYfRAMlZwDSr6z4zNKV6xu53/e2BuaBbGhbyYIXTrmgu/bGHzmqOs7mJSJBHy9Ud+ApHx3QjrkKSp1pxvlFg==}
