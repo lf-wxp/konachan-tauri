@@ -1,8 +1,7 @@
 import 'jest';
-import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import Image from './index';
-import mockImage from '../../../../test/mock/file';
+import mockImage from '../../../test/mock/file';
 
 describe('<Image />', () => {
   it('render correctly', () => {
@@ -19,7 +18,6 @@ describe('<Image />', () => {
     const img = container.querySelector('img');
     fireEvent.error(img!);
     fireEvent.animationEnd(img!);
-    // expect(img?.getAttribute('src')).toBe(mockImage);
     expect(
       container.querySelector('.bk-image')?.classList.contains('animationend')
     ).toBeTruthy();

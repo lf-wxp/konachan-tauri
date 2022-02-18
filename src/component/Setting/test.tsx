@@ -1,15 +1,19 @@
 import 'jest';
-import React from 'react';
 import { render, act, fireEvent } from '@testing-library/react';
 import Setting from './index';
-import wrapper from '../../../../test/wrapper';
+import { wrapper } from '../../../test/util';
+import { securityState, pageState, loadingState } from '../../store';
 
-const SettingTest = wrapper(<Setting />);
+const SettingTest = wrapper(<Setting />, {
+	security: securityState,
+	loading: loadingState,
+	page: pageState,
+});
 
 describe('<Setting />', () => {
   it('render correctly', () => {
     const { container } = render(
-      <SettingTest value={{ page: 1, security: true, loading: false }} />
+      <SettingTest values={{ page: 1, security: true, loading: false }} />
     );
     const toggle = container.querySelector('.bk-setting__toggle');
     const refresh = container.querySelector('.bk-setting__refresh');
@@ -23,10 +27,5 @@ describe('<Setting />', () => {
         .querySelector('.bk-setting__security')
         ?.classList.contains('active')
     ).toBeFalsy();
-    // expect(ipcRenderer.send).toBeCalledWith(EventImage.POST, {
-    //   page: 1,
-    //   tags: ''
-    // });
-    // expect(ipcRenderer.send).toBeCalledTimes(1);
   });
 });

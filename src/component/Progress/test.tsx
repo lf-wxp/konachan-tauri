@@ -1,11 +1,10 @@
 import 'jest';
-import React from 'react';
 import { render } from '@testing-library/react';
-import Progress from '~component/Progress';
+import Progress from './index';
 
 describe('<Progress />', () => {
   it('render correctly', () => {
-    const { container } = render(<Progress percent={'100%'} />);
+    const { container } = render(<Progress percent={1} />);
     expect(container).toBeTruthy();
   });
 });

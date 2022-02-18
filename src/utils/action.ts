@@ -6,7 +6,7 @@ import { ImageDetail } from '../model/image';
 import { DownloadItem } from '../model/downloadItem';
 import { TFunc1Void } from './type';
 
-enum Action {
+export enum Action {
   GET_POST = 'get_post',
   DOWNLOAD_ITEM = 'download_image',
 }
@@ -68,8 +68,8 @@ export const updateValue = (source: DownloadItem[], value: DownloadItem) => {
       ...item,
       ...value
     }
-  })
-}
+  });
+};
 
 export const updateProgress = (source: DownloadItem[], action: ProgressAction, value: DownloadItem) => {
   if (action === ProgressAction.REMOVE) {

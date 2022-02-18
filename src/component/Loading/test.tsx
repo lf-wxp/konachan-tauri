@@ -1,10 +1,10 @@
 import 'jest';
-import React from 'react';
 import { render } from '@testing-library/react';
 import Loading from './index';
-import wrapper from '../../../../test/wrapper';
+import { wrapper } from '../../../test/util';
+import { loadingState } from '../../store';
 
-const LoadingTest = wrapper(<Loading />);
+const LoadingTest = wrapper(<Loading />, { loading: loadingState });
 
 describe('<Loading />', () => {
   it('render correctly is loading', () => {
@@ -13,7 +13,7 @@ describe('<Loading />', () => {
   });
 
   it(`render correctly isn't loading`, () => {
-    const { container } = render(<LoadingTest value={{ loading: false }} />);
+    const { container } = render(<LoadingTest values={{ loading: false }} />);
     expect(container).toBeTruthy();
   });
 });
