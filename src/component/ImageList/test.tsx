@@ -1,6 +1,7 @@
 import 'jest';
 import ReactDOM, { unmountComponentAtNode } from 'react-dom';
-import { act, fireEvent } from '@testing-library/react';
+// import { act, fireEvent } from '@testing-library/react';
+import { fireEvent } from '@testing-library/react';
 import ImageList from './index';
 import mockImage from '../../../test/mock/file';
 import { wrapper } from '../../../test/util';
@@ -67,23 +68,19 @@ describe('<ImageList />', () => {
 	});
 
 	it.skip('render correctly', async () => {
-		await act(async () => {
-			ReactDOM.render(<ImageListTest values={{ images, download, security }} />, container);
-		});
+		// await act(async () => {
+    ReactDOM.render(<ImageListTest values={{ images, download, security }} />, container);
+		// });
 		expect(container!.querySelectorAll('.bk-list__item').length).toBe(1);
 	});
 
 	it.skip('fire the download event', async () => {
-		await act(async () => {
+		// await act(async () => {
 			ReactDOM.render(<ImageListTest values={{ images, download, security }} />, container);
-		});
-		act(() => {
-			fireEvent.click(container!.querySelector('.bk-list__down')!);
-		});
-		expect(container?.querySelector('.bk-list__down')).toBeTruthy();
-		// expect(ipcRenderer.send).toBeCalledTimes(1);
-		// expect(ipcRenderer.send).toBeCalledWith(EventDownload.DOWNLOAD, {
-		//   url: mockImage
 		// });
+		// act(() => {
+			fireEvent.click(container!.querySelector('.bk-list__down')!);
+		// });
+		expect(container?.querySelector('.bk-list__down')).toBeTruthy();
 	});
 });

@@ -10,10 +10,8 @@ import {
   not,
   nth,
   pipe,
-  SafePred,
   test,
   flip,
-  T,
 } from 'ramda';
 import React, { useEffect, useRef, useState } from 'react';
 import { useMeasure } from 'react-use';
@@ -29,12 +27,13 @@ interface DotLineProps {
   height?: string | number;
 }
 
-const judge = (fn: SafePred<any>, idx: number): ((x: any) => boolean) =>
+const judge = (fn: any, idx: number): ((x: any) => boolean) =>
   pipe(nth(idx), fn);
 
 const int = curry(Number.parseInt);
 
 const percent2number = pipe(
+  //@ts-ignore
   match(/(\d+)/),
   nth(0),
   flip(int)(10),
@@ -43,6 +42,7 @@ const percent2number = pipe(
 );
 
 const parseWidthPercent = ([percent, width]: [unknown, number]): number =>
+  //@ts-ignore
   percent2number(percent as string)(width);
 
 const getSize = cond<[unknown, number], number>([
@@ -53,6 +53,7 @@ const getSize = cond<[unknown, number], number>([
       judge(test(/^\d+%$/), 0),
       judge(pipe(isNil, not), 1),
     ]),
+    //@ts-ignore
     parseWidthPercent,
   ],
 ]);
@@ -74,10 +75,12 @@ export default React.memo<DotLineProps>(
     }, []);
 
     useEffect(() => {
+      //@ts-ignore
       setRealH(getSize([height, parentH]));
     }, [height, parentH]);
 
     useEffect(() => {
+      //@ts-ignore
       setRealW(getSize([width, parentW]));
     }, [width, parentW]);
 

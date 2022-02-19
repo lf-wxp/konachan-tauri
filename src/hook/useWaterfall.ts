@@ -29,6 +29,8 @@ interface UseWaterfallProps {
   minWidth: number;
 }
 
+type ColumnParams = Record<'column' | 'colWidth' | 'width', number>;
+
 const shortestColumnPure: TFunc1<
   number[],
   { height: number; index: number; colArray: number[] }
@@ -43,9 +45,12 @@ const shortestColumnPure: TFunc1<
   };
 };
 
+
+
 const calcColumnWidth = (mW: number) => (
   mM: number,
-): TFunc1<number, { column: number; colWidth: number; width: number }> =>
+): TFunc1<number, ColumnParams> =>
+  //@ts-ignore
   pipe(
     ifElse(
       flip(gt)(0),
@@ -65,7 +70,9 @@ const calcColumnWidth = (mW: number) => (
         ),
         when(pipe(prop('colWidth'), flip(lt)(mM)), (p) => ({
           column: 1,
+          //@ts-ignore
           colWidth: prop('width', p),
+          //@ts-ignore
           width: prop('width', p),
         })),
       ),

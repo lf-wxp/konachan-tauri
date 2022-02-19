@@ -1,7 +1,3 @@
-/**
- * @jest-environment jsdom
- */
-
 import 'jest';
 import Wave from './Wave';
 
