@@ -1,4 +1,4 @@
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
 import { ToastContainer, Slide } from 'react-toastify';
 import { RecoilRoot } from 'recoil';
 

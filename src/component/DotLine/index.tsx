@@ -33,9 +33,9 @@ const judge = (fn: any, idx: number): ((x: any) => boolean) =>
 const int = curry(Number.parseInt);
 
 const percent2number = pipe(
-  //@ts-ignore
   match(/(\d+)/),
   nth(0),
+  // @ts-ignore
   flip(int)(10),
   flip(divide)(100),
   multiply,

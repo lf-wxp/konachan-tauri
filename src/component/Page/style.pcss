@@ -250,7 +250,6 @@
 
 .bk-pager_go-span,
 .bk-pager_go-input {
-  line-height: 45px;
   text-align: center;
   font-size: 20px;
   font-family: ZagRegular;
@@ -269,8 +268,11 @@
 }
 
 .bk-pager_go-span {
-  font-size: 14px;
+  font-size: 12px;
   line-height: var(--themePageItemSize);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .bk-pager_go-input {
