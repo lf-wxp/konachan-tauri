@@ -58,7 +58,7 @@ jobs:
     - name: install app dependencies and build it
       run: pnpm i && pnpm build
     - uses: jdukewich/tauri-action@fix-windows-bundling
-    # - uses: tauri-apps/tauri-action@v0
+    - uses: tauri-apps/tauri-action@v0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
