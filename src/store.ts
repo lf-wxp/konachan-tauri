@@ -56,3 +56,7 @@ export const downloadItemsState = atom<DownloadItem[]>({
   default: [],
 });
 
+export const modeState = atom<'json' | 'xml'>({
+  key: 'modeState',
+  default: 'json',
+});

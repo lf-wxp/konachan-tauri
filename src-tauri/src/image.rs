@@ -10,9 +10,12 @@ use std::path::Path;
 use tauri::api::path::download_dir;
 use tauri::Manager;
 use std::time::Duration;
+use urlencoding::decode;
+use serde_json;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Image {
+  id: i32,
   url: String,
   width: i32,
   height: i32,
@@ -24,9 +27,10 @@ pub struct Image {
   sample_height: i32,
   tags: String,
   security: bool,
+  name: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct ApiResponse {
   pub data: Option<Post>,
   pub code: u8,
@@ -99,9 +103,10 @@ impl Progress {
   }
 }
 
-pub type PostResult = Result<Post, reqwest::Error>;
+pub type PostResult = Result<Post, Box<dyn Error>>;
 
 pub const API: &str = "https://konachan.net/post.xml";
+pub const API_JSON: &str = "https://acglife.club/api/post";
 
 pub fn get_file_name(url: &str) -> &str {
   Path::new(url).file_name().unwrap().to_str().unwrap()
@@ -151,23 +156,53 @@ pub async fn download_image(url: String) -> Result<(), Box<dyn Error>> {
 
 pub fn attr_to_int(e: roxmltree::Node, attr: &str) -> i32 {
   e.attribute(attr)
-    .unwrap()
+    .unwrap_or("")
     .to_string()
     .parse::<i32>()
-    .unwrap()
+    .unwrap_or(0)
+}
+pub fn attr_to_string(e: roxmltree::Node, attr: &str) -> String {
+  e.attribute(attr).unwrap_or("").to_string()
 }
 
-pub async fn get_post(page: i8) -> PostResult {
+pub async fn get_post_json(page: i8, tags: String) -> PostResult {
+  let client = reqwest::Client::new();
+  let resp = client
+    .get(API_JSON)
+    .header("x-api-key", "konachan-api")
+    .timeout(Duration::from_secs(20))
+    .query(&[("page", page)])
+    .query(&[("tags", tags)])
+    .send()
+    .await?
+    .text()
+    .await?;
+  let data: ApiResponse = serde_json::from_str(&resp)?;
+  match data.data {
+    Some(d) => Ok(d),
+    None => panic!("error")
+  }
+}
+
+pub async fn get_post_xml(page: i8, tags: String) -> PostResult {
   let client = reqwest::Client::new();
   let resp = client
     .get(API)
     .timeout(Duration::from_secs(10))
     .query(&[("page", page)])
+    .query(&[("tags", tags)])
     .send()
     .await?
     .text()
     .await?;
   Ok(parse(resp.to_string()))
+}
+
+pub async fn get_post(page: i8, tags: String, mode: String) -> PostResult {
+  if mode == "json" {
+    return get_post_json(page, tags).await;
+  }
+  get_post_xml(page, tags).await
 }
 
 pub fn parse(xml: String) -> Post {
@@ -181,18 +216,23 @@ pub fn parse(xml: String) -> Post {
         count = attr_to_int(e, "count");
       }
       "post" => {
+        let url = e.attribute("file_url").unwrap_or("");
+        let encoded_name = url.split("/").last().unwrap_or("");
+        let name = decode(encoded_name).map_or("".to_string(), |x| x.to_string());
         images.push(Image {
-          url: e.attribute("file_url").unwrap().to_string(),
+          id: attr_to_int(e, "id"),
+          url: url.to_string(),
           width: attr_to_int(e, "width"),
           height: attr_to_int(e, "height"),
-          preview: e.attribute("preview_url").unwrap().to_string(),
+          preview: attr_to_string(e, "preview_url"),
           preview_width: attr_to_int(e, "preview_width"),
           preview_height: attr_to_int(e, "preview_height"),
-          sample: e.attribute("sample_url").unwrap().to_string(),
+          sample: attr_to_string(e, "sample_url"),
           sample_width: attr_to_int(e, "sample_width"),
           sample_height: attr_to_int(e, "sample_height"),
-          tags: e.attribute("tags").unwrap().to_string(),
-          security: e.attribute("rating").unwrap() == "s",
+          tags: attr_to_string(e, "tags"),
+          security: attr_to_string(e, "rating") == "s",
+          name,
         });
       }
       _ => {}

@@ -9,4 +9,5 @@ export interface Ctx {
   loading: boolean;
   colorSet: ColorSet;
   tags: string;
+  mode: 'json' | 'xml';
 }

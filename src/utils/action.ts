@@ -47,7 +47,7 @@ const toastError = (msg: string) => {
   });
 }
 
-export const getPost = async (params: { page: number; tags: string; refresh: boolean }) => {
+export const getPost = async (params: { page: number; tags: string; refresh: boolean, mode: 'xml' | 'json'}) => {
   try {
     const data = await invoke<Data>(Action.GET_POST, params);
     if (data.code !== 0) {

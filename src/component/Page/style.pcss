@@ -206,6 +206,7 @@
   block-size: 100%;
   font-family: ZagRegular;
   line-height: var(--themePageItemSize);
+  color: var(--themeBaseColor);
   letter-spacing: 2px;
 }
 
@@ -263,7 +264,7 @@
   background: none;
 
   &::placeholder {
-    color: white;
+    color: var(--themeBaseColor);
   }
 }
 
@@ -272,6 +273,7 @@
   line-height: var(--themePageItemSize);
   text-overflow: ellipsis;
   overflow: hidden;
+  color: var(--themeBaseColor);
   white-space: nowrap;
 }
 
@@ -281,6 +283,7 @@
   outline: none;
   box-sizing: border-box;
   border-block-end: 4px solid var(--themeBaseColor);
+  color: var(--themeBaseColor);
   animation: blink 1s ease-in-out infinite alternate-reverse both;
 }
 
@@ -297,6 +300,7 @@
   inset-inline-start: 0;
   inset-block-start: 0;
   vertical-align: top;
+  color: var(--themeBaseColor);
   background-color: var(--themePageNavBgColor);
   transition: all 0.2s ease;
 }
