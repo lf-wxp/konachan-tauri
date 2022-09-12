@@ -2,16 +2,16 @@ use futures_util::StreamExt;
 use reqwest;
 use roxmltree;
 use serde::{Deserialize, Serialize};
+use serde_json;
 use std::cmp::min;
 use std::error::Error;
 use std::fs::File;
 use std::io::{self, Cursor, Write};
 use std::path::Path;
+use std::time::Duration;
 use tauri::api::path::download_dir;
 use tauri::Manager;
-use std::time::Duration;
 use urlencoding::decode;
-use serde_json;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Image {
@@ -103,31 +103,29 @@ impl Progress {
   }
 }
 
-pub type PostResult = Result<Post, Box<dyn Error>>;
+pub type ResultDyn<T> = Result<T, Box<dyn Error>>;
 
-pub const API: &str = "https://konachan.net/post.xml";
+pub const API_XML: &str = "https://konachan.net/post.xml";
 pub const API_JSON: &str = "https://acglife.club/api/post";
 
-pub fn get_file_name(url: &str) -> &str {
-  Path::new(url).file_name().unwrap().to_str().unwrap()
+pub fn get_file_name(url: &str) -> Option<&str> {
+  let name = Path::new(url).file_name()?.to_str()?;
+  Some(name)
 }
 
-pub fn create_file(url: String) -> io::Result<File> {
-  let file_name = get_file_name(&url);
-  let mut download_path = download_dir().unwrap();
+pub fn create_file(url: String) -> ResultDyn<File> {
+  let file_name = get_file_name(&url).ok_or("get file name error")?;
+  let mut download_path = download_dir().ok_or("get download dir error")?;
   download_path.push(file_name);
   let file = File::create(download_path.as_path())?;
   Ok(file)
 }
 
-pub async fn download_image_progress_strut(
-  url: String,
-  progress: &mut Progress,
-) -> Result<(), Box<dyn Error>> {
+pub async fn download_image_progress_strut(url: String, progress: &mut Progress) -> ResultDyn<()> {
   let res = reqwest::get(&url).await?;
   let total = res
     .content_length()
-    .expect(&format!("Failed to get content length {}", &url));
+    .ok_or(format!("Failed to get content length {}", &url))?;
   progress.set_total(total);
   let mut stream = res.bytes_stream();
   let mut file = create_file(url)?;
@@ -165,7 +163,7 @@ pub fn attr_to_string(e: roxmltree::Node, attr: &str) -> String {
   e.attribute(attr).unwrap_or("").to_string()
 }
 
-pub async fn get_post_json(page: i8, tags: String) -> PostResult {
+pub async fn get_post_json(page: i8, tags: String) -> ResultDyn<Post> {
   let client = reqwest::Client::new();
   let resp = client
     .get(API_JSON)
@@ -178,16 +176,14 @@ pub async fn get_post_json(page: i8, tags: String) -> PostResult {
     .text()
     .await?;
   let data: ApiResponse = serde_json::from_str(&resp)?;
-  match data.data {
-    Some(d) => Ok(d),
-    None => panic!("error")
-  }
+  let post = data.data.ok_or("get image data from json api error")?;
+  Ok(post)
 }
 
-pub async fn get_post_xml(page: i8, tags: String) -> PostResult {
+pub async fn get_post_xml(page: i8, tags: String) -> ResultDyn<Post> {
   let client = reqwest::Client::new();
   let resp = client
-    .get(API)
+    .get(API_XML)
     .timeout(Duration::from_secs(10))
     .query(&[("page", page)])
     .query(&[("tags", tags)])
@@ -195,18 +191,18 @@ pub async fn get_post_xml(page: i8, tags: String) -> PostResult {
     .await?
     .text()
     .await?;
-  Ok(parse(resp.to_string()))
+  parse(resp.to_string())
 }
 
-pub async fn get_post(page: i8, tags: String, mode: String) -> PostResult {
+pub async fn get_post(page: i8, tags: String, mode: String) -> ResultDyn<Post> {
   if mode == "json" {
     return get_post_json(page, tags).await;
   }
   get_post_xml(page, tags).await
 }
 
-pub fn parse(xml: String) -> Post {
-  let doc = roxmltree::Document::parse(&xml).unwrap();
+pub fn parse(xml: String) -> ResultDyn<Post> {
+  let doc = roxmltree::Document::parse(&xml)?;
   let elem = doc.descendants();
   let mut count = 0;
   let mut images: Vec<Image> = vec![];
@@ -238,5 +234,5 @@ pub fn parse(xml: String) -> Post {
       _ => {}
     }
   }
-  Post { count, images }
+  Ok(Post { count, images })
 }
