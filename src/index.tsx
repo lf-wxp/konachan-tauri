@@ -12,6 +12,6 @@ const root = ReactDOM.createRoot(container);
 root.render(
   <RecoilRoot>
     <App />
-    <ToastContainer transition={Slide}/>
+    <ToastContainer transition={Slide} />
   </RecoilRoot>
 );

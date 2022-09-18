@@ -5,9 +5,9 @@ import { wrapper } from '../../../test/util';
 import { securityState, pageState, loadingState } from '../../store';
 
 const SettingTest = wrapper(<Setting />, {
-	security: securityState,
-	loading: loadingState,
-	page: pageState,
+  security: securityState,
+  loading: loadingState,
+  page: pageState,
 });
 
 describe('<Setting />', () => {

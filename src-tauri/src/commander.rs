@@ -1,5 +1,5 @@
 use crate::image;
-use tauri::AppHandle; 
+use tauri::AppHandle;
 
 #[tauri::command]
 pub async fn get_post(page: i8, tags: String, mode: String) -> image::ApiResponse {
@@ -19,9 +19,9 @@ pub async fn get_post(page: i8, tags: String, mode: String) -> image::ApiRespons
 }
 
 #[tauri::command]
-pub async fn download_image(app_handle: AppHandle, url: String) -> () {
+pub async fn download_image(app_handle: AppHandle, url: String) {
   let mut progress = image::Progress::new(url.clone(), 0, 0, app_handle);
-  if let Err(_) = image::download_image_progress_strut(url, &mut progress).await {
+  if (image::download_image_progress_strut(url, &mut progress).await).is_err() {
     progress.error();
   };
 }

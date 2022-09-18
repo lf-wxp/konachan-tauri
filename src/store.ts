@@ -3,60 +3,55 @@ import { atom } from 'recoil';
 import { ImageDetail } from './model/image';
 import { DownloadItem } from './model/downloadItem';
 
-export const pagesState = atom({
-	key: 'pagesState',
-	default: 0,
-});
-
 export const pageState = atom({
-	key: 'pageState',
-	default: 1,
+  key: 'pageState',
+  default: 1,
 });
 
 export const securityState = atom({
-	key: 'securityState',
-	default: true,
+  key: 'securityState',
+  default: true,
 });
 
 export const loadingState = atom({
-	key: 'loadingState',
-	default: true,
+  key: 'loadingState',
+  default: true,
 });
 
 export const tagsState = atom({
-	key: 'tagsState',
-	default: '',
+  key: 'tagsState',
+  default: '',
 });
 
 export const refreshToggleState = atom({
-	key: 'refreshToggleState',
-	default: false,
+  key: 'refreshToggleState',
+  default: false,
 });
 
 export const imagesState = atom<ImageDetail[]>({
-	key: 'imagesState',
-	default: [],
+  key: 'imagesState',
+  default: [],
 });
 
 export const totalState = atom({
-	key: 'totalState',
-	default: 0,
+  key: 'totalState',
+  default: 0,
 });
 
 export const colorSetState = atom({
-	key: 'colorSetState',
-	default: {
-		mute: '',
-		vibrant: '',
-	},
+  key: 'colorSetState',
+  default: {
+    mute: '',
+    vibrant: '',
+  },
 });
 
 export const downloadItemsState = atom<DownloadItem[]>({
-	key: 'downloadItemsState',
-	default: [],
+  key: 'downloadItemsState',
+  default: [],
 });
 
 export const modeState = atom<'json' | 'xml'>({
-	key: 'modeState',
-	default: 'json',
+  key: 'modeState',
+  default: 'json',
 });

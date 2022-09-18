@@ -45,52 +45,50 @@ const shortestColumnPure: TFunc1<
   };
 };
 
-
-
-const calcColumnWidth = (mW: number) => (
-  mM: number,
-): TFunc1<number, ColumnParams> =>
-  //@ts-ignore
-  pipe(
-    ifElse(
-      flip(gt)(0),
-      pipe(
-        ifElse(
-          pipe(flip(mathMod)(mW), flip(gt)(0)),
-          (w) => ({
-            column: Math.ceil(w / mW),
-            colWidth: divide(w, Math.ceil(w / mW)),
-            width: w,
-          }),
-          (w) => ({
-            column: Math.ceil(w / mW),
-            colWidth: mW,
-            width: w,
-          }),
+const calcColumnWidth =
+  (mW: number) =>
+  (mM: number): TFunc1<number, ColumnParams> =>
+    // @ts-expect-error
+    pipe(
+      ifElse(
+        flip(gt)(0),
+        pipe(
+          ifElse(
+            pipe(flip(mathMod)(mW), flip(gt)(0)),
+            (w) => ({
+              column: Math.ceil(w / mW),
+              colWidth: divide(w, Math.ceil(w / mW)),
+              width: w,
+            }),
+            (w) => ({
+              column: Math.ceil(w / mW),
+              colWidth: mW,
+              width: w,
+            })
+          ),
+          when(pipe(prop('colWidth'), flip(lt)(mM)), (p) => ({
+            column: 1,
+            // @ts-expect-error
+            colWidth: prop('width', p),
+            // @ts-expect-error
+            width: prop('width', p),
+          }))
         ),
-        when(pipe(prop('colWidth'), flip(lt)(mM)), (p) => ({
-          column: 1,
-          //@ts-ignore
-          colWidth: prop('width', p),
-          //@ts-ignore
-          width: prop('width', p),
-        })),
-      ),
-      (w) => ({
-        column: 0,
-        colWidth: 0,
-        width: w,
-      }),
-    ),
-  );
+        (w) => ({
+          column: 0,
+          colWidth: 0,
+          width: w,
+        })
+      )
+    );
 
 const calcColumnArrayPure = (h: number): TFunc1<number[], number[]> =>
   pipe(shortestColumnPure, (p) =>
-    update(prop('index')(p), add(prop('height')(p), h), prop('colArray')(p)),
+    update(prop('index')(p), add(prop('height')(p), h), prop('colArray')(p))
   );
 
 const calcPositionPure = (
-  colWidth: number,
+  colWidth: number
 ): TFunc1<number[], { x: number; y: number }> =>
   pipe(shortestColumnPure, (o) => ({
     x: multiply(prop('index', o), colWidth),
@@ -100,12 +98,12 @@ const calcPositionPure = (
 const calcListItemSize = (
   item: ImageDetail,
   colWidth: number,
-  cols: number[],
+  cols: number[]
 ): ImageDom => {
-  const ratio = (divide(
+  const ratio = divide(
     prop('height')(item),
-    prop('width')(item),
-  ) as unknown) as number;
+    prop('width')(item)
+  ) as unknown as number;
   const height = multiply(colWidth)(ratio);
   const { x, y } = calcPositionPure(colWidth)(cols);
   return mergeRight({
@@ -119,26 +117,29 @@ const calcListItemSize = (
   })(item);
 };
 
-const updateLayoutPure = (security: boolean) => (colWidth: number) => (
-  colArray: number[],
-): TFunc1<ImageDetail[], { cols: number[]; items: ImageDom[] }> =>
-  pipe(
-    filter<ImageDetail>((item) => (security ? item.security : true)),
-    reduce(
-      ({ cols, items }, item) => {
-        const newItem = calcListItemSize(item, colWidth, cols);
-        const newCols = calcColumnArrayPure(prop('styleH', newItem) as number)(
-          cols,
-        );
-        items.push(newItem);
-        return {
-          cols: newCols,
-          items: [...items],
-        };
-      },
-      { cols: colArray, items: [] as ImageDom[] },
-    ),
-  );
+const updateLayoutPure =
+  (security: boolean) =>
+  (colWidth: number) =>
+  (
+    colArray: number[]
+  ): TFunc1<ImageDetail[], { cols: number[]; items: ImageDom[] }> =>
+    pipe(
+      filter<ImageDetail>((item) => (security ? item.security : true)),
+      reduce(
+        ({ cols, items }, item) => {
+          const newItem = calcListItemSize(item, colWidth, cols);
+          const newCols = calcColumnArrayPure(
+            prop('styleH', newItem) as number
+          )(cols);
+          items.push(newItem);
+          return {
+            cols: newCols,
+            items: [...items],
+          };
+        },
+        { cols: colArray, items: [] as ImageDom[] }
+      )
+    );
 
 export default ({
   security,

@@ -16,7 +16,7 @@ import './app.pcss';
 const App: React.MemoExoticComponent<() => React.ReactElement> = React.memo(
   () => {
     return (
-      <section className='bk-container'>
+      <section className="bk-container">
         <Background />
         <DotLine />
         <Service />
@@ -32,7 +32,7 @@ const App: React.MemoExoticComponent<() => React.ReactElement> = React.memo(
         </section>
       </section>
     );
-  },
+  }
 );
 
 export default App;
