@@ -4,10 +4,10 @@
 		"version": "1.0.4"
 	},
 	"build": {
-		"distDir": "../dist",
+		"distDir": "../src/dist",
 		"devPath": "http://localhost:1234",
 		"beforeDevCommand": "pnpm run dev",
-		"beforeBuildCommand": "pnpm run build"
+    "beforeBuildCommand": "pnpm run build"
 	},
 	"tauri": {
 		"bundle": {
@@ -59,11 +59,21 @@
 				"width": 1000,
 				"height": 800,
 				"resizable": true,
-				"fullscreen": false
+				"fullscreen": false,
+				"visible": false
+			},
+			{
+				"width": 200,
+				"height": 200,
+				"decorations": false,
+        "transparent": true,
+				"url": "splashscreen.html",
+				"label": "splashscreen"
 			}
 		],
 		"security": {
 			"dangerousDisableAssetCspModification": true
-		}
+		},
+    "macOSPrivateApi": true
 	}
 }
