@@ -201,7 +201,7 @@ pub fn attr_to_string(e: roxmltree::Node, attr: &str) -> String {
   e.attribute(attr).unwrap_or("").to_string()
 }
 
-pub async fn get_post_json(page: i8, limit: i8, tags: String) -> ResultDyn<Post> {
+pub async fn get_post_json(page: u32, limit: u8, tags: String) -> ResultDyn<Post> {
   let client = reqwest::Client::new();
   let resp = client
     .get(API_JSON)
@@ -219,8 +219,9 @@ pub async fn get_post_json(page: i8, limit: i8, tags: String) -> ResultDyn<Post>
   Ok(post)
 }
 
-pub async fn get_post_xml(page: i8, limit: i8, tags: String) -> ResultDyn<Post> {
+pub async fn get_post_xml(page: u32, limit: u8, tags: String) -> ResultDyn<Post> {
   let client = reqwest::Client::new();
+  println!("xxxxxxx {:}, {:}", limit, page);
   let resp = client
     .get(API_XML)
     .timeout(Duration::from_secs(10))
@@ -234,7 +235,7 @@ pub async fn get_post_xml(page: i8, limit: i8, tags: String) -> ResultDyn<Post> 
   parse(resp)
 }
 
-pub async fn get_post(page: i8, limit:i8, tags: String, mode: String) -> ResultDyn<Post> {
+pub async fn get_post(page: u32, limit: u8, tags: String, mode: String) -> ResultDyn<Post> {
   if mode == "json" {
     return get_post_json(page, limit, tags).await;
   }
