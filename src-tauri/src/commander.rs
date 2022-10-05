@@ -2,8 +2,8 @@ use crate::image;
 use tauri::{AppHandle, Manager};
 
 #[tauri::command]
-pub async fn get_post(page: i8, tags: String, mode: String) -> image::ApiResponse {
-  match image::get_post(page, tags, mode).await {
+pub async fn get_post(page: i8, limit:i8, tags: String, mode: String) -> image::ApiResponse {
+  match image::get_post(page, limit, tags, mode).await {
     Ok(data) => image::ApiResponse {
       data: Some(data),
       code: 0,

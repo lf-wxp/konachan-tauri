@@ -1,5 +1,3 @@
-use tauri::Manager;
-
 mod commander;
 mod image;
 
