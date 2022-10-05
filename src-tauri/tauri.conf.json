@@ -1,7 +1,7 @@
 {
 	"package": {
 		"productName": "konachan",
-		"version": "1.0.4"
+		"version": "1.0.5"
 	},
 	"build": {
 		"distDir": "../src/dist",
@@ -63,8 +63,8 @@
 				"visible": false
 			},
 			{
-				"width": 200,
-				"height": 200,
+				"width": 150,
+				"height": 150,
 				"decorations": false,
         "transparent": true,
 				"url": "splashscreen.html",
