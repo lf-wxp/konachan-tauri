@@ -3,7 +3,7 @@ BetterKonachan tauri version, use tauri as backend;
 
 
 ## Screenshot
-![screenshot](./screenshot.png)
+![screenshot](./screenshot.gif)
 
 ## Installation
 
