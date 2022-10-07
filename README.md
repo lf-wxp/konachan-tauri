@@ -1,5 +1,5 @@
 ## Description
-BetterKonachan tauri version, use tauri as backend;
+Konachan tauri version, use tauri as backend;
 
 
 ## Screenshot
@@ -7,14 +7,17 @@ BetterKonachan tauri version, use tauri as backend;
 
 ## Installation
 
-### frontend
 ```bash
-$ pnpm install
+pnpm i
 ```
-### backend
-reference the [tauri document](https://tauri.studio/docs/getting-started/setting-up-macos) to install tauri
 
-## Running the app
+### frontend
+the frontend link to [konachan-front](https://github.com/lf-wxp/konachan-front) as a submodule.
+
+### backend
+reference the [tauri document](https://tauri.studio/docs/getting-started/setting-up-macos) to install tauri.
+
+## Run the app
 
 ```bash
 # development
