@@ -106,7 +106,7 @@ impl Progress {
 pub type ResultDyn<T> = Result<T, Box<dyn Error>>;
 
 pub const API_XML: &str = "https://konachan.net/post.xml";
-pub const API_JSON: &str = "https://acglife.club/api/post";
+pub const API_JSON: &str = "https://pic.onlyxp.me/api/post";
 
 pub fn get_file_name(url: &str) -> ResultDyn<String> {
   let name = Path::new(url)
@@ -221,7 +221,6 @@ pub async fn get_post_json(page: u32, limit: u8, tags: String) -> ResultDyn<Post
 
 pub async fn get_post_xml(page: u32, limit: u8, tags: String) -> ResultDyn<Post> {
   let client = reqwest::Client::new();
-  println!("xxxxxxx {:}, {:}", limit, page);
   let resp = client
     .get(API_XML)
     .timeout(Duration::from_secs(10))
