@@ -9,7 +9,16 @@ Konachan tauri version, use tauri as backend;
 
 ```bash
 pnpm i
+
+git submodule init
+
+git submodule update --recursive
 ```
+### install tauri
+```bash
+cargo install tauri-cli
+```
+
 
 ### frontend
 the frontend link to [konachan-front](https://github.com/lf-wxp/konachan-front) as a submodule.

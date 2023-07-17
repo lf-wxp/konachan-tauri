@@ -1,20 +1,20 @@
 {
   "name": "konachan-tauri",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "private": true,
   "type": "module",
   "dependencies": { },
   "scripts": {
-    "dev": "npm --prefix ./src run dev:tauri",
-    "build": "npm --prefix ./src run build:tauri",
-    "preview": "npm --prefix ./src run preview:tauri",
+    "dev": "pnpm --prefix ./src run dev:tauri",
+    "build": "pnpm --prefix ./src run build:tauri",
+    "preview": "pnpm --prefix ./src run preview:tauri",
     "tauri": "tauri",
     "prepare": "husky install",
     "postinstall": "cd src && pnpm i"
   },
   "devDependencies": {
-    "@commitlint/cli": "^17.1.2",
-    "@commitlint/config-conventional": "^17.1.0",
-    "husky": "^8.0.1"
+    "@commitlint/cli": "^17.6.6",
+    "@commitlint/config-conventional": "^17.6.6",
+    "husky": "^8.0.3"
   }
 }
