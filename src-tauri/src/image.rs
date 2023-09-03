@@ -1,8 +1,5 @@
 use futures_util::StreamExt;
-use reqwest;
-use roxmltree;
 use serde::{Deserialize, Serialize};
-use serde_json;
 use std::cmp::min;
 use std::error::Error;
 use std::fs::{self, File};
@@ -75,7 +72,7 @@ impl Progress {
   }
 
   fn get_percent(&self) -> f64 {
-    (self.receive as f64 / self.total as f64) as f64
+    self.receive as f64 / self.total as f64
   }
 
   fn update(&self) {
