@@ -5,9 +5,9 @@
 	},
 	"build": {
 		"distDir": "../src/dist",
-		"devPath": "http://localhost:1234",
-		"beforeDevCommand": "pnpm run dev",
-    "beforeBuildCommand": "pnpm run build"
+		"devPath": "http://localhost:8888",
+		"beforeDevCommand": "cd src && trunk serve --features tauri",
+    "beforeBuildCommand": "cd src run trunk build --features tauri"
 	},
 	"tauri": {
 		"bundle": {

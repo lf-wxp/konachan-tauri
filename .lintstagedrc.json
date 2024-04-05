@@ -1,7 +1,0 @@
-{
-  "*{.ts,.tsx}": [
-    "eslint --fix --ext src",
-    "prettier --write src",
-    "git add"
-  ]
-}

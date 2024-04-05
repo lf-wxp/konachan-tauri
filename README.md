@@ -8,8 +8,6 @@ Konachan tauri version, use tauri as backend;
 ## Installation
 
 ```bash
-pnpm i
-
 git submodule init
 
 git submodule update --recursive
