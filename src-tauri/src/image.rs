@@ -79,7 +79,7 @@ impl Progress {
   fn update(&self) {
     let percent = self.get_percent();
     let status = if percent == 1_f64 {
-      "success"
+      "loaded"
     } else {
       "pending"
     };
@@ -95,7 +95,7 @@ impl Progress {
     let payload = ProgressPayload {
       percent: self.get_percent(),
       url: self.url.clone(),
-      status: "fail".to_string(),
+      status: "error".to_string(),
     };
     let _ = &self.app.emit_all("progress", payload);
   }
