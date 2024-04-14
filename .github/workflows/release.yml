@@ -38,6 +38,9 @@ jobs:
       uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
+    - name: install wasm32-unknown-unknown 
+      run: rustup target add wasm32-unknown-unknown 
+      uses: actions-rs/toolchain@v1
     - name: install webkit2gtk (ubuntu only)
       if: matrix.platform == 'ubuntu-latest'
       run: |
