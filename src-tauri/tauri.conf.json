@@ -7,7 +7,7 @@
 		"distDir": "../src/dist",
 		"devPath": "http://localhost:8888",
 		"beforeDevCommand": "cd src && trunk serve --features tauri",
-    "beforeBuildCommand": "cd src run trunk build --release --features tauri"
+    "beforeBuildCommand": "cd src && trunk build --release --features tauri"
 	},
 	"tauri": {
 		"bundle": {
