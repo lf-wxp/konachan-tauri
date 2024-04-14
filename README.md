@@ -19,7 +19,7 @@ cargo install tauri-cli
 
 
 ### frontend
-the frontend link to [konachan-front](https://github.com/lf-wxp/konachan-front) as a submodule.
+the frontend link to [konachan-yew](https://github.com/lf-wxp/konachan-yew) as a submodule.
 
 ### backend
 reference the [tauri document](https://tauri.studio/docs/getting-started/setting-up-macos) to install tauri.

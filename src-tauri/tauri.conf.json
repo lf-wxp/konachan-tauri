@@ -1,13 +1,13 @@
 {
 	"package": {
 		"productName": "konachan",
-		"version": "1.0.9"
+		"version": "1.1.0"
 	},
 	"build": {
 		"distDir": "../src/dist",
 		"devPath": "http://localhost:8888",
 		"beforeDevCommand": "cd src && trunk serve --features tauri",
-    "beforeBuildCommand": "cd src run trunk build --features tauri"
+    "beforeBuildCommand": "cd src run trunk build --release --features tauri"
 	},
 	"tauri": {
 		"bundle": {
