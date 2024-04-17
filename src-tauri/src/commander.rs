@@ -1,7 +1,7 @@
 use crate::image;
-use tauri::{AppHandle, Manager};
+use tauri::{command, AppHandle, Manager, Window};
 
-#[tauri::command]
+#[command]
 pub async fn get_post(page: u32, limit: u8, tags: String, mode: String) -> image::ApiResponse {
   println!("get_post {:?}", page);
   match image::get_post(page, limit, tags, mode).await {
@@ -21,7 +21,7 @@ pub async fn get_post(page: u32, limit: u8, tags: String, mode: String) -> image
   }
 }
 
-#[tauri::command]
+#[command]
 pub async fn download_image(app_handle: AppHandle, url: String) {
   println!("download {:?}", url);
   let mut progress = image::Progress::new(url.clone(), 0, 0, app_handle);
@@ -30,8 +30,8 @@ pub async fn download_image(app_handle: AppHandle, url: String) {
   };
 }
 
-#[tauri::command]
-pub async fn close_splashscreen(window: tauri::Window) {
+#[command]
+pub async fn close_splashscreen(window: Window) {
   if let Some(splashscreen) = window.get_window("splashscreen") {
     splashscreen.close().unwrap();
   }

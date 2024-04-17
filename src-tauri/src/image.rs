@@ -1,17 +1,22 @@
 use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
-use std::cmp::min;
-use std::error::Error;
-use std::fs::{self, File};
-use std::io::{self, Cursor, Write};
-use std::path::{Path, PathBuf};
-use std::time::Duration;
-use tauri::api::path::download_dir;
-use tauri::Manager;
+use std::{
+  cmp::min,
+  error::Error,
+  fs::{self, File},
+  io::{self, Cursor, Write},
+  path::{Path, PathBuf},
+  time::Duration,
+};
+use tauri::{api::path::download_dir, AppHandle, Manager};
 use urlencoding::decode;
 
+pub(crate) type ResultDyn<T> = Result<T, Box<dyn Error>>;
+pub const API_XML: &str = "https://konachan.net/post.xml";
+pub const API_JSON: &str = "https://pic.onlyxp.me/api/post";
+
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Image {
+pub(crate) struct Image {
   id: i32,
   url: String,
   width: i32,
@@ -41,7 +46,7 @@ pub struct Post {
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct ProgressPayload {
+pub(crate) struct ProgressPayload {
   percent: f64,
   url: String,
   status: String,
@@ -51,11 +56,11 @@ pub struct Progress {
   url: String,
   total: u64,
   receive: u64,
-  app: tauri::AppHandle,
+  app: AppHandle,
 }
 
 impl Progress {
-  pub fn new(url: String, total: u64, receive: u64, app: tauri::AppHandle) -> Progress {
+  pub fn new(url: String, total: u64, receive: u64, app: AppHandle) -> Progress {
     Progress {
       url,
       total,
@@ -100,11 +105,6 @@ impl Progress {
     let _ = &self.app.emit_all("progress", payload);
   }
 }
-
-pub type ResultDyn<T> = Result<T, Box<dyn Error>>;
-
-pub const API_XML: &str = "https://konachan.net/post.xml";
-pub const API_JSON: &str = "https://pic.onlyxp.me/api/post";
 
 pub fn get_file_name(url: &str) -> ResultDyn<String> {
   let name = Path::new(url)
