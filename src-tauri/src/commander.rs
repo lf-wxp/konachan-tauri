@@ -24,16 +24,17 @@ pub async fn get_post(page: u32, limit: u8, tags: String, mode: String) -> image
 #[command]
 pub async fn download_image(app_handle: AppHandle, url: String) {
   println!("download {:?}", url);
+  let download_dir = app_handle.path().download_dir().unwrap();
   let mut progress = image::Progress::new(url.clone(), 0, 0, app_handle);
-  if (image::download_image_progress_strut(url, &mut progress).await).is_err() {
+  if (image::download_image_progress_strut(url, &mut progress, download_dir).await).is_err() {
     progress.error();
   };
 }
 
-#[command]
-pub async fn close_splashscreen(window: Window) {
-  if let Some(splashscreen) = window.get_window("splashscreen") {
-    splashscreen.close().unwrap();
-  }
-  window.get_window("main").unwrap().show().unwrap();
-}
+ #[command]
+ pub fn close_splashscreen(window: Window) {
+   if let Some(splashscreen) = window.get_webview_window("splashscreen") {
+     splashscreen.close().unwrap();
+   }
+   window.get_webview_window("main").unwrap().show().unwrap();
+ }

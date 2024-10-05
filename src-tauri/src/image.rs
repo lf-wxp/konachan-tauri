@@ -1,17 +1,16 @@
+use anyhow::{anyhow, Result};
 use futures_util::StreamExt;
 use serde::{Deserialize, Serialize};
 use std::{
   cmp::min,
-  error::Error,
   fs::{self, File},
   io::{self, Cursor, Write},
   path::{Path, PathBuf},
   time::Duration,
 };
-use tauri::{api::path::download_dir, AppHandle, Manager};
+use tauri::{AppHandle, Emitter};
 use urlencoding::decode;
 
-pub(crate) type ResultDyn<T> = Result<T, Box<dyn Error>>;
 pub const API_XML: &str = "https://konachan.net/post.xml";
 pub const API_JSON: &str = "https://pic.onlyxp.me/api/post";
 
@@ -93,7 +92,7 @@ impl Progress {
       url: self.url.clone(),
       status: status.to_string(),
     };
-    let _ = &self.app.emit_all("progress", payload);
+    let _ = &self.app.emit("progress", payload);
   }
 
   pub fn error(&self) {
@@ -102,54 +101,58 @@ impl Progress {
       url: self.url.clone(),
       status: "error".to_string(),
     };
-    let _ = &self.app.emit_all("progress", payload);
+    let _ = &self.app.emit("progress", payload);
   }
 }
 
-pub fn get_file_name(url: &str) -> ResultDyn<String> {
+pub fn get_file_name(url: &str) -> Result<String> {
   let name = Path::new(url)
     .file_name()
-    .ok_or("get file name error")?
+    .ok_or(anyhow!("get file name error"))?
     .to_str()
-    .ok_or("get file name error")?;
+    .ok_or(anyhow!("get file name error"))?;
   let name = decode(name).map_or("".to_string(), |x| x.to_string());
   Ok(name)
 }
 
-pub fn get_file_full_path(file_name: String) -> ResultDyn<PathBuf> {
-  let mut download_path = download_dir().ok_or("get download dir error")?;
+pub fn get_file_full_path(file_name: String, download_dir: PathBuf) -> Result<PathBuf> {
+  let mut download_path = download_dir;
   download_path.push(file_name);
   Ok(download_path.as_path().to_owned())
 }
 
-pub fn get_tmp_file_full_path(file_name: String) -> ResultDyn<PathBuf> {
+pub fn get_tmp_file_full_path(file_name: String, download_dir: PathBuf) -> Result<PathBuf> {
   let mut name = file_name;
   name.push_str(".tmp");
-  get_file_full_path(name)
+  get_file_full_path(name, download_dir)
 }
 
-pub fn create_file(file_name: &str) -> ResultDyn<File> {
-  let path = get_tmp_file_full_path(file_name.to_string())?;
+pub fn create_file(file_name: &str, download_dir: PathBuf) -> Result<File> {
+  let path = get_tmp_file_full_path(file_name.to_string(), download_dir)?;
   let file = File::create(path)?;
   Ok(file)
 }
 
-pub fn is_file_exist(file_name: String) -> ResultDyn<bool> {
-  let path = get_file_full_path(file_name)?;
+pub fn is_file_exist(file_name: String, download_dir: PathBuf) -> Result<bool> {
+  let path = get_file_full_path(file_name, download_dir)?;
   Ok(Path::new(&path).exists())
 }
 
-pub fn rename_tmp_file(file_name: String) -> ResultDyn<()> {
+pub fn rename_tmp_file(file_name: String, download_dir: PathBuf) -> Result<()> {
   fs::rename(
-    get_tmp_file_full_path(file_name.clone())?,
-    get_file_full_path(file_name)?,
+    get_tmp_file_full_path(file_name.clone(), download_dir.clone())?,
+    get_file_full_path(file_name, download_dir)?,
   )?;
   Ok(())
 }
 
-pub async fn download_image_progress_strut(url: String, progress: &mut Progress) -> ResultDyn<()> {
+pub async fn download_image_progress_strut(
+  url: String,
+  progress: &mut Progress,
+  download_dir: PathBuf,
+) -> Result<()> {
   let file_name = get_file_name(&url)?;
-  if is_file_exist(file_name.clone())? {
+  if is_file_exist(file_name.clone(), download_dir.clone())? {
     progress.set_total(1);
     progress.set_receive(1);
     progress.update();
@@ -158,31 +161,31 @@ pub async fn download_image_progress_strut(url: String, progress: &mut Progress)
   let res = reqwest::get(&url).await?;
   let total = res
     .content_length()
-    .ok_or(format!("failed to get content length {}", &url))?;
+    .ok_or(anyhow!(format!("failed to get content length {}", &url)))?;
   progress.set_total(total);
   let mut stream = res.bytes_stream();
-  let mut file = create_file(&file_name)?;
+  let mut file = create_file(&file_name, download_dir.clone())?;
   let mut downloaded: u64 = 0;
   while let Some(item) = stream.next().await {
-    let chunk = item.map_err(|_| "error while downloading file".to_string())?;
+    let chunk = item.map_err(|_| anyhow!("error while downloading file"))?;
     file
       .write(&chunk)
-      .map_err(|_| "error while writing to file".to_string())?;
+      .map_err(|_| anyhow!("error while writing to file"))?;
     let new = min(downloaded + (chunk.len() as u64), total);
     downloaded = new;
     progress.set_receive(new);
     progress.update();
     if progress.get_percent() == 1_f64 {
-      rename_tmp_file(file_name.clone())?;
+      rename_tmp_file(file_name.clone(), download_dir.clone())?;
     }
   }
   Ok(())
 }
 
 #[allow(dead_code)]
-pub async fn download_image(url: String) -> Result<(), Box<dyn Error>> {
+pub async fn download_image(url: String, download_dir: PathBuf) -> Result<()> {
   let res = reqwest::get(&url).await?;
-  let mut file = create_file(&url)?;
+  let mut file = create_file(&url, download_dir)?;
   let mut content = Cursor::new(res.bytes().await?);
   io::copy(&mut content, &mut file)?;
   Ok(())
@@ -199,7 +202,7 @@ pub fn attr_to_string(e: roxmltree::Node, attr: &str) -> String {
   e.attribute(attr).unwrap_or("").to_string()
 }
 
-pub async fn get_post_json(page: u32, limit: u8, tags: String) -> ResultDyn<Post> {
+pub async fn get_post_json(page: u32, limit: u8, tags: String) -> Result<Post> {
   let client = reqwest::Client::new();
   let resp = client
     .get(API_JSON)
@@ -213,11 +216,13 @@ pub async fn get_post_json(page: u32, limit: u8, tags: String) -> ResultDyn<Post
     .text()
     .await?;
   let data: ApiResponse = serde_json::from_str(&resp)?;
-  let post = data.data.ok_or("get image data from json api error")?;
+  let post = data
+    .data
+    .ok_or(anyhow!("get image data from json api error"))?;
   Ok(post)
 }
 
-pub async fn get_post_xml(page: u32, limit: u8, tags: String) -> ResultDyn<Post> {
+pub async fn get_post_xml(page: u32, limit: u8, tags: String) -> Result<Post> {
   let client = reqwest::Client::new();
   let resp = client
     .get(API_XML)
@@ -232,14 +237,14 @@ pub async fn get_post_xml(page: u32, limit: u8, tags: String) -> ResultDyn<Post>
   parse(resp)
 }
 
-pub async fn get_post(page: u32, limit: u8, tags: String, mode: String) -> ResultDyn<Post> {
+pub async fn get_post(page: u32, limit: u8, tags: String, mode: String) -> Result<Post> {
   if mode == "json" {
     return get_post_json(page, limit, tags).await;
   }
   get_post_xml(page, limit, tags).await
 }
 
-pub fn parse(xml: String) -> ResultDyn<Post> {
+pub fn parse(xml: String) -> Result<Post> {
   let doc = roxmltree::Document::parse(&xml)?;
   let elem = doc.descendants();
   let mut count = 0;

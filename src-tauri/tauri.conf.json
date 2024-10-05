@@ -1,54 +1,51 @@
 {
-	"package": {
-		"productName": "konachan",
-		"version": "1.1.0"
-	},
-	"build": {
-		"distDir": "../src/dist",
-		"devPath": "http://localhost:8888",
-		"beforeDevCommand": "cd src && trunk serve --features tauri",
-    "beforeBuildCommand": "cd src && trunk build --release --features tauri"
-	},
-	"tauri": {
-		"bundle": {
-			"active": true,
-			"targets": "all",
-			"identifier": "konachan",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-			],
-			"resources": [],
-			"externalBin": [],
-			"copyright": "",
-			"category": "Photography",
-			"shortDescription": "",
-			"longDescription": "",
+	"$schema": "https://schema.tauri.app/config/2.0.0",
+	"bundle": {
+		"active": true,
+		"targets": "all",
+		"windows": {
+			"certificateThumbprint": null,
+			"digestAlgorithm": "sha256",
+			"timestampUrl": ""
+		},
+		"icon": [
+			"icons/32x32.png",
+			"icons/128x128.png",
+			"icons/128x128@2x.png",
+			"icons/icon.icns",
+			"icons/icon.ico"
+		],
+		"resources": [],
+		"externalBin": [],
+		"copyright": "",
+		"category": "Photography",
+		"shortDescription": "",
+		"longDescription": "",
+		"macOS": {
+			"frameworks": [],
+			"minimumSystemVersion": "",
+			"exceptionDomain": "",
+			"signingIdentity": null,
+			"entitlements": null
+		},
+		"linux": {
 			"deb": {
 				"depends": []
-			},
-			"macOS": {
-				"frameworks": [],
-				"minimumSystemVersion": "",
-				"exceptionDomain": "",
-				"signingIdentity": null,
-				"entitlements": null
-			},
-			"windows": {
-				"certificateThumbprint": null,
-				"digestAlgorithm": "sha256",
-				"timestampUrl": ""
 			}
-		},
-		"updater": {
-			"active": false
-		},
-		"allowlist": {
-			"all": true
-		},
+		}
+	},
+	"build": {
+		"beforeBuildCommand": "cd src && trunk build --release --features tauri",
+		"frontendDist": "../src/dist",
+		"beforeDevCommand": "cd src && trunk serve --features tauri",
+		"devUrl": "http://localhost:8888"
+	},
+	"productName": "konachan",
+	"mainBinaryName": "konachan",
+	"version": "1.2.0",
+	"identifier": "konachan",
+	"plugins": {},
+	"app": {
 		"windows": [
 			{
 				"title": "konachan",
@@ -62,7 +59,7 @@
 				"width": 150,
 				"height": 150,
 				"decorations": false,
-        "transparent": true,
+				"transparent": true,
 				"url": "splashscreen.html",
 				"label": "splashscreen"
 			}
@@ -70,6 +67,6 @@
 		"security": {
 			"dangerousDisableAssetCspModification": true
 		},
-    "macOSPrivateApi": true
+		"macOSPrivateApi": true
 	}
 }
