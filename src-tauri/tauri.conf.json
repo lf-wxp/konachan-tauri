@@ -35,9 +35,9 @@
 		}
 	},
 	"build": {
-		"beforeBuildCommand": "cd src && trunk build --release --features tauri",
+		"beforeBuildCommand": "trunk build --release --features tauri --config src/Trunk.toml",
 		"frontendDist": "../src/dist",
-		"beforeDevCommand": "cd src && trunk serve --features tauri",
+		"beforeDevCommand": "trunk serve --features tauri --config src/Trunk.toml",
 		"devUrl": "http://localhost:8888"
 	},
 	"productName": "konachan",
