@@ -41,7 +41,6 @@
 		"devUrl": "http://localhost:8888"
 	},
 	"productName": "konachan",
-	"mainBinaryName": "konachan",
 	"version": "1.2.0",
 	"identifier": "konachan",
 	"plugins": {},
