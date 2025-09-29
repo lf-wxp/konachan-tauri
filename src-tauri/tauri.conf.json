@@ -41,7 +41,7 @@
 		"devUrl": "http://localhost:8888"
 	},
 	"productName": "konachan",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"identifier": "konachan",
 	"plugins": {},
 	"app": {
