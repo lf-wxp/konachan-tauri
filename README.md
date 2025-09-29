@@ -17,6 +17,11 @@ git submodule update --recursive
 cargo install tauri-cli
 ```
 
+### update submodule
+```bash
+git submodule update --remote  
+```
+
 
 ### frontend
 the frontend link to [konachan-yew](https://github.com/lf-wxp/konachan-yew) as a submodule.
