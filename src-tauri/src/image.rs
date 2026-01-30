@@ -14,7 +14,22 @@ use urlencoding::decode;
 pub const API_XML: &str = "https://konachan.net/post.xml";
 pub const API_JSON: &str = "https://pic.onlyxp.me/api/post";
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub enum ApiMode {
+  Json,
+  Xml,
+}
+
+impl AsRef<str> for ApiMode {
+  fn as_ref(&self) -> &str {
+    match self {
+      ApiMode::Json => "json",
+      ApiMode::Xml => "xml",
+    }
+  }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub(crate) struct Image {
   id: i32,
   url: String,
@@ -92,7 +107,7 @@ impl Progress {
       url: self.url.clone(),
       status: status.to_string(),
     };
-    let _ = &self.app.emit("progress", payload);
+    let _ = self.app.emit("progress", payload);
   }
 
   pub fn error(&self) {
@@ -101,17 +116,17 @@ impl Progress {
       url: self.url.clone(),
       status: "error".to_string(),
     };
-    let _ = &self.app.emit("progress", payload);
+    let _ = self.app.emit("progress", payload);
   }
 }
 
 pub fn get_file_name(url: &str) -> Result<String> {
   let name = Path::new(url)
     .file_name()
-    .ok_or(anyhow!("get file name error"))?
+    .ok_or_else(|| anyhow!("failed to extract file name from url"))?
     .to_str()
-    .ok_or(anyhow!("get file name error"))?;
-  let name = decode(name).map_or("".to_string(), |x| x.to_string());
+    .ok_or_else(|| anyhow!("failed to convert file name to string"))?;
+  let name = decode(name).map_or_else(|_| "".to_string(), |x| x.to_string());
   Ok(name)
 }
 
@@ -161,7 +176,7 @@ pub async fn download_image_progress_strut(
   let res = reqwest::get(&url).await?;
   let total = res
     .content_length()
-    .ok_or(anyhow!(format!("failed to get content length {}", &url)))?;
+    .ok_or_else(|| anyhow!("failed to get content length: {}", url))?;
   progress.set_total(total);
   let mut stream = res.bytes_stream();
   let mut file = create_file(&file_name, download_dir.clone())?;
@@ -169,7 +184,7 @@ pub async fn download_image_progress_strut(
   while let Some(item) = stream.next().await {
     let chunk = item.map_err(|_| anyhow!("error while downloading file"))?;
     file
-      .write(&chunk)
+      .write_all(&chunk)
       .map_err(|_| anyhow!("error while writing to file"))?;
     let new = min(downloaded + (chunk.len() as u64), total);
     downloaded = new;
@@ -237,26 +252,25 @@ pub async fn get_post_xml(page: u32, limit: u8, tags: String) -> Result<Post> {
   parse(resp)
 }
 
-pub async fn get_post(page: u32, limit: u8, tags: String, mode: String) -> Result<Post> {
-  if mode == "json" {
-    return get_post_json(page, limit, tags).await;
+pub async fn get_post(page: u32, limit: u8, tags: String, mode: ApiMode) -> Result<Post> {
+  match mode {
+    ApiMode::Json => get_post_json(page, limit, tags).await,
+    ApiMode::Xml => get_post_xml(page, limit, tags).await,
   }
-  get_post_xml(page, limit, tags).await
 }
 
 pub fn parse(xml: String) -> Result<Post> {
   let doc = roxmltree::Document::parse(&xml)?;
   let elem = doc.descendants();
   let mut count = 0;
-  let mut images: Vec<Image> = vec![];
-  for e in elem {
+  let mut images: Vec<Image> = Vec::with_capacity(50);  for e in elem {
     match e.tag_name().name() {
       "posts" => {
         count = attr_to_int(e, "count");
       }
       "post" => {
         let url = e.attribute("file_url").unwrap_or("");
-        let encoded_name = url.split('/').last().unwrap_or("");
+        let encoded_name = url.split('/').next_back().unwrap_or("");
         let name = decode(encoded_name).map_or("".to_string(), |x| x.to_string());
         images.push(Image {
           id: attr_to_int(e, "id"),
