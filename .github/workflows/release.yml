@@ -4,14 +4,38 @@ on:
 
 jobs:
   create-release:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     outputs:
-      RELEASE_UPLOAD_ID: ${{ steps.create_release.outputs.id }}
+      release_id: ${{ steps.create_release.outputs.result }}
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: get version
+        run: echo "PACKAGE_VERSION=$(node -p "require('./src-tauri/tauri.conf.json').version")" >> $GITHUB_ENV
+
+      - name: create release
+        id: create_release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data } = await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: `app-v${process.env.PACKAGE_VERSION}`,
+              name: `Konachan v${process.env.PACKAGE_VERSION}`,
+              body: 'See the assets to download this version and install.',
+              draft: true,
+              prerelease: false
+            })
+            return data.id
+
   build-tauri:
     needs: create-release
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -19,34 +43,39 @@ jobs:
 
     runs-on: ${{ matrix.platform }}
     steps:
-    - name: checkout repository and submodules
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
-    - name: install Rust stable
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-    - name: install wasm32-unknown-unknown 
-      run: rustup target add wasm32-unknown-unknown 
-    - name: install webkit2gtk (ubuntu only)
-      if: matrix.platform == 'ubuntu-latest'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+      - name: checkout repository and submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
-    - name: install trunk
-      uses: jetli/trunk-action@v0.5.0
-      with:
-        version: 'latest'
-    - uses: tauri-apps/tauri-action@v0.5.15
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        releaseId: ${{ needs.create-release.outputs.RELEASE_UPLOAD_ID }}
-        tagName: app-v__VERSION__
-        releaseName: "Konachan v__VERSION__"
-        releaseBody: 'See the assets to download this version and install.'
-        releaseDraft: true
-        prerelease: false
-        args: ${{ matrix.settings.args }}
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: install wasm32-unknown-unknown
+        run: rustup target add wasm32-unknown-unknown
+
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: clippy check
+        run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings
+
+      - name: install trunk
+        uses: jetli/trunk-action@v0.5.0
+        with:
+          version: "latest"
+
+      - name: build and release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          releaseId: ${{ needs.create-release.outputs.release_id }}
