@@ -24,7 +24,7 @@
 </p>
 
 <p align="center">
-  一个使用 <b>Tauri 2</b> 和 <b>Yew</b> 构建的精美桌面端 <a href="https://konachan.net/">Konachan</a> 图片浏览器，为 macOS、Windows 和 Linux 提供原生体验。
+  一个使用 <b>Tauri 2</b> 和 <b>Yew</b> 构建的精美桌面端 <a href="https://konachan.com/">Konachan</a> 图片浏览器，为 macOS、Windows 和 Linux 提供原生体验。
 </p>
 
 ---
@@ -408,7 +408,7 @@ cargo tauri build
 | ------- | ----------- | ---- |
 | **konachan-yew** | 前端子模块 (Yew + WASM) | [GitHub](https://github.com/lf-wxp/konachan-yew) |
 | **konachan-api** | Web 版本的后端 API 服务器 | [GitHub](https://github.com/lf-wxp/konachan-api) |
-| **Konachan** | 本应用基于的图片板 | [网站](https://konachan.net/) |
+| **Konachan** | 本应用基于的图片板 | [网站](https://konachan.com/) |
 
 ---
 
@@ -420,7 +420,7 @@ cargo tauri build
 
 ## 🙏 致谢
 
-- [Konachan](https://konachan.net/) 提供 API
+- [Konachan](https://konachan.com/) 提供 API
 - [Tauri](https://tauri.app/) 提供出色的桌面框架
 - [Yew](https://yew.rs/) 提供 Rust WASM 框架
 - 所有帮助过这个项目的贡献者

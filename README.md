@@ -24,7 +24,7 @@
 </p>
 
 <p align="center">
-  A beautiful desktop <a href="https://konachan.net/">Konachan</a> image browser built with <b>Tauri 2</b> and <b>Yew</b>, delivering a native experience across macOS, Windows, and Linux.
+  A beautiful desktop <a href="https://konachan.com/">Konachan</a> image browser built with <b>Tauri 2</b> and <b>Yew</b>, delivering a native experience across macOS, Windows, and Linux.
 </p>
 
 ---
@@ -407,7 +407,7 @@ Contributions are welcome! Here's how you can help:
 | ------- | ----------- | ---- |
 | **konachan-yew** | Frontend submodule (Yew + WASM) | [GitHub](https://github.com/lf-wxp/konachan-yew) |
 | **konachan-api** | Backend API server for the web version | [GitHub](https://github.com/lf-wxp/konachan-api) |
-| **Konachan** | The image board this app is based on | [Website](https://konachan.net/) |
+| **Konachan** | The image board this app is based on | [Website](https://konachan.com/) |
 
 ---
 
@@ -419,7 +419,7 @@ This project is licensed under the **MIT License**. See the [LICENSE](./LICENSE)
 
 ## � Acknowledgments
 
-- [Konachan](https://konachan.net/) for providing the API
+- [Konachan](https://konachan.com/) for providing the API
 - [Tauri](https://tauri.app/) for the amazing desktop framework
 - [Yew](https://yew.rs/) for the Rust WASM framework
 - All contributors who have helped this project

@@ -11,7 +11,7 @@ use std::{
 use tauri::{AppHandle, Emitter};
 use urlencoding::decode;
 
-pub const API_XML: &str = "https://konachan.net/post.xml";
+pub const API_XML: &str = "https://konachan.com/post.xml";
 pub const API_JSON: &str = "https://pic.onlyxp.me/api/post";
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
