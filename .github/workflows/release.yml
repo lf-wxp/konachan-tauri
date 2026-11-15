@@ -32,8 +32,44 @@ jobs:
             })
             return data.id
 
+  frontend-check:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository and submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: install Rust 1.94
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.94"
+          targets: wasm32-unknown-unknown
+          components: rustfmt, clippy
+
+      - name: rust cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "./src -> target"
+
+      # The frontend is a separate crate in the submodule, so `cargo clippy` on
+      # the backend above never sees it. Both transports are linted because
+      # either can be the one that ships: `web` for the browser build, `tauri`
+      # for the desktop bundle. The lint runs on the host target, which is
+      # enough for type and lint errors; `trunk` does the real wasm build.
+      - name: format check
+        run: cargo fmt --manifest-path src/Cargo.toml --check
+
+      - name: clippy (web transport)
+        run: cargo clippy --manifest-path src/Cargo.toml --features web -- -D warnings
+
+      - name: clippy (tauri transport)
+        run: cargo clippy --manifest-path src/Cargo.toml --features tauri -- -D warnings
+
   build-tauri:
-    needs: create-release
+    needs: [create-release, frontend-check]
     permissions:
       contents: write
     strategy:
@@ -48,11 +84,13 @@ jobs:
         with:
           submodules: recursive
 
-      - name: install Rust stable
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: install wasm32-unknown-unknown
-        run: rustup target add wasm32-unknown-unknown
+      # Pinned to the same channel as `src/rust-toolchain.toml`, so CI cannot
+      # drift onto a newer compiler than the one the project claims to support.
+      - name: install Rust 1.94
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: "1.94"
+          targets: wasm32-unknown-unknown
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'
@@ -64,6 +102,9 @@ jobs:
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri -> target"
+
+      - name: format check
+        run: cargo fmt --manifest-path src-tauri/Cargo.toml --check
 
       - name: clippy check
         run: cargo clippy --manifest-path src-tauri/Cargo.toml -- -D warnings

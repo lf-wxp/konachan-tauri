@@ -1,5 +1,5 @@
 use crate::image::{self, ApiMode};
-use tauri::{command, AppHandle, Manager, Window};
+use tauri::{AppHandle, Manager, Window, command};
 
 #[command]
 pub async fn get_post(page: u32, limit: u8, tags: String, mode: String) -> image::ApiResponse {
@@ -44,14 +44,15 @@ pub async fn download_image(app_handle: AppHandle, url: String) {
   }
 }
 
- #[command]
- pub fn close_splashscreen(window: Window) -> Result<(), String> {
-   if let Some(splashscreen) = window.get_webview_window("splashscreen") {
-     splashscreen.close().map_err(|e| e.to_string())?;
-   }
-   window.get_webview_window("main")
-     .ok_or("main window not found")?
-     .show()
-     .map_err(|e| e.to_string())?;
-   Ok(())
- }
+#[command]
+pub fn close_splashscreen(window: Window) -> Result<(), String> {
+  if let Some(splashscreen) = window.get_webview_window("splashscreen") {
+    splashscreen.close().map_err(|e| e.to_string())?;
+  }
+  window
+    .get_webview_window("main")
+    .ok_or("main window not found")?
+    .show()
+    .map_err(|e| e.to_string())?;
+  Ok(())
+}
