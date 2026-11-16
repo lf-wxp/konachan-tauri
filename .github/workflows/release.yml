@@ -86,11 +86,15 @@ jobs:
 
       # Pinned to the same channel as `src/rust-toolchain.toml`, so CI cannot
       # drift onto a newer compiler than the one the project claims to support.
+      # `components` is not optional here: the action installs a `minimal`
+      # profile, so without it the format and clippy steps below fail with
+      # "'cargo-fmt' is not installed for the toolchain".
       - name: install Rust 1.94
         uses: dtolnay/rust-toolchain@master
         with:
           toolchain: "1.94"
           targets: wasm32-unknown-unknown
+          components: rustfmt, clippy
 
       - name: install dependencies (ubuntu only)
         if: matrix.platform == 'ubuntu-latest'
